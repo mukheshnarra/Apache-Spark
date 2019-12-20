@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Twitter Popular Tags</title>
+<script src="static/js/Chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body position="fixed">
+<h2 align="center">Top Trendings Tags</h2>
+<div style="width=100%;height=100%">
+<canvas id="canvas"/>
+</div>
+<script>
+var ctx=document.getElementById("canvas");
+var myChart = new Chart(ctx, {
+    	type: 'horizontalBar',
+    	data: {
+        	labels: [{% for item in labels %}
+                  	"{{item}}",
+                 	{% endfor %}],
+        	datasets: [{
+            	label: '# of Mentions',
+            	data: [{% for item in values %}
+     	                 {{item}},
+                    	{% endfor %}],
+            	backgroundColor: [
+                	'rgba(255, 99, 132, 0.2)',
+                	'rgba(55, 193, 235, 0.2)',
+                	'rgba(255, 206, 86, 0.2)',
+          	      'rgba(75, 192, 192, 0.2)',
+                	'rgba(153, 102, 255, 0.2)',
+                	'rgba(255, 159, 64, 0.2)',
+                	'rgba(255, 99, 132, 0.2)',
+                	'rgba(54, 162, 235, 0.2)',
+                	'rgba(255, 206, 86, 0.2)',
+                	'rgba(75, 192, 192, 0.2)',
+                	'rgba(153, 102, 255, 0.2)'
+            	],
+            	borderColor: [
+                	'rgba(255,99,132,1)',
+                	'rgba(55, 193, 235, 1)',
+        	        'rgba(255, 206, 86, 1)',
+                	'rgba(75, 192, 192, 1)',
+                	'rgba(153, 102, 255, 1)',
+                	'rgba(255, 159, 64, 1)',
+                	'rgba(255,99,132,1)',
+                	'rgba(54, 162, 235, 1)',
+                	'rgba(255, 206, 86, 1)',
+                	'rgba(75, 192, 192, 1)',
+                	'rgba(153, 102, 255, 1)'
+            	],
+            	borderWidth: 1
+        	}]
+    	},
+    	options: {
+        	scales: {
+	            yAxes: [{
+                	ticks: {
+                    	beginAtZero:true
+                	}
+            	}]
+        	}
+    	}
+   });
+var strlabels=[];
+var strvalues=[];
+setInterval(function(){$.getJSON('/refresh',function(data)
+{
+strlabels=data.sLabels;
+strvalues=data.sValues;
+});
+myChart.data.labels = strlabels;
+    	myChart.data.datasets[0].data = strvalues;
+    	myChart.update();
+   },5000);
+
+</script>
+</body>
+</html>
